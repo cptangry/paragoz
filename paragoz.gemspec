@@ -10,8 +10,8 @@ Gem::Specification.new do |spec|
   spec.email         = ["caglar.gokhan@gmail.com"]
 
   spec.summary       = %q{Currency parser}
-  spec.description   = %q{Parsing currency data from Doviz.com and calculate exchange etc}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.description   = %q{Parsing currency data from Doviz.com and calculate exchange etc.}
+  spec.homepage      = "https://github.com/cptangry/paragoz"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
