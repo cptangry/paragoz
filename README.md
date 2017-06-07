@@ -47,7 +47,7 @@ Or install it yourself as:
   usd.currency_name # String
   usd.currency_selling # Float: Selling value
   usd.currency_buying # Float: Buying value
-usd.currency_change_rate # Float: Change rate
+  usd.currency_change_rate # Float: Change rate
 # Methods:
 # for Paragoz module
   currency = Paragoz.new_ currency # Named Parameters: 'code: "usd"' 'amount: 1' 'data: nil'
