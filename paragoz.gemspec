@@ -6,6 +6,7 @@ require "paragoz/version"
 Gem::Specification.new do |spec|
   spec.name          = "paragoz"
   spec.version       = Paragoz::VERSION
+  spec.required_ruby_version = '~> 2.0'
   spec.authors       = ["Gökhan Çağlar"]
   spec.email         = ["caglar.gokhan@gmail.com"]
 
