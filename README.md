@@ -22,7 +22,7 @@ Or install it yourself as:
 ## Usage
 
 ```ruby
-  include Paragoz
+  require 'paragoz'
 
   Paragoz.Currencies_ALL # All currencies class
   Paragoz.Currencies_ALL.json_data # All currencies as hash
