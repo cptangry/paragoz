@@ -56,7 +56,7 @@ tr.print_costs
 tr.calculate_amount('usd', 120.0)
 
 # To return a spesific change rate as a number give currency code as a parameter
-# To see all currency codes: Paragoz::CURRENCY_CODES will return and array
+# To see all currency codes: Paragoz::CURRENCY_CODES will return an array
 tr.take_rate('aud')
 euro.take_rate('jpy')
 usd.take_rate('sek')
