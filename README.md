@@ -33,7 +33,7 @@ usd_other = Paragoz.new_currency(code: 'usd', amount: 5.0) # 5 USD object
 
 # To define a euro variables refers to 50 EURO object
 euro = Paragoz.new_currency(code: 'eur', amount: 50.0)
-euro_other = Paragoz.new_currency(code: 'eur', amount: 2.5) # 1 EURO object
+euro_other = Paragoz.new_currency(code: 'eur', amount: 2.5) # 2.5 EURO object
 
 
 tr = Paragoz.new_currency # Returns Currency Object as 1 TRY
