@@ -47,7 +47,7 @@ module Paragoz
      def calculate_cost(currency_code ,calculate_amount = 1.0, info = false)
        cost = @cost[currency_code] * amount
        if amount.is_a?(Float) && amount > 0  && CURRENCY_CODES.include?(currency_code.upcase)
-         puts "You need #{cost} #{@base} to buy #{amount} #{currency_code}"
+         puts "You need #{cost} #{@base} to buy #{amount} #{currency_code}" if info
          @cost[currency_code] * amount
        else
          puts "ERROR! You need to give 2 parameters >>  currency_code & calculate_amount"
