@@ -23,7 +23,8 @@ Or install it yourself as:
 ## Usage
 
 ```ruby
-# To define a usd variable refers to 1 USD object 
+# To define a usd variable refers to 1 USD object
+# Paragoz.new_currency(code: 'usd')
 # there is 3 named parameters:
 # code: String(default 'try') amount: Float(default: 1.0) data: JSON(default: nil)
 # you can use customized json formatted as on http://api.fixer.io/latest?base=USD
