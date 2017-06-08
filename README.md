@@ -45,7 +45,7 @@ puts usd
 puts euro
 puts tr
 
-# To see cost of buying a foreign curreny
+# To see cost of buying a foreign currency
 # currency_object.print_costs
 usd.print_costs
 euro.print_costs
