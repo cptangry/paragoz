@@ -1,7 +1,8 @@
 # Paragoz
 
-Welcome to Paragöz gem! It is parsing currency
-data from Doviz.com and calculate exchange etc.
+Welcome to Paragoz gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/paragoz`. To experiment with that code, run `bin/console` for an interactive prompt.
+
+It will parse currency data from fixer.io currency api JSON and calculate exchange rate, cost etc. for you.
 
 ## Installation
 
@@ -13,7 +14,7 @@ gem 'paragoz'
 
 And then execute:
 
-    $ bundle install
+    $ bundle
 
 Or install it yourself as:
 
@@ -22,40 +23,52 @@ Or install it yourself as:
 ## Usage
 
 ```ruby
-  require 'paragoz'
+# To define a usd variable refers to 1 USD object 
+# there is 3 named parameters:
+# code: String(default 'try') amount: Float(default: 1.0) data: JSON(default: nil)
+# you can use customized json formatted as on http://api.fixer.io/latest?base=USD
+# (Also you can pick any currency code after '=' sign when visiting link.) 
+usd = Paragoz.new_currency(code: 'usd', amount: 15.0)
+usd_other = Paragoz.new_currency(code: 'usd', amount: 5.0) # 5 USD object
 
-  Paragoz.Currencies_ALL # All currencies class
-  Paragoz.Currencies_ALL.json_data # All currencies as hash
-# You can create a currency without params( Default: 1 USD)
-  usd = Paragoz.new_currency
-# Also you have choices
-  euro = Paragoz.new_currency(code: "eur", amount: 5)
+# To define a euro variables refers to 50 EURO object
+euro = Paragoz.new_currency(code: 'eur', amount: 50.0)
+euro_other = Paragoz.new_currency(code: 'eur', amount: 2.5) # 1 EURO object
 
-# Paragoz.CURRENCY_CODES for all codes
-# You can exchance currenies
-  usd.exchance_with(euro, 1) # Second parameter to ignore your currency amount 
 
-# usd.exchance_with(euro) will exchance class amount instance to euro
+tr = Paragoz.new_currency # Returns Currency Object as 1 TRY
+tr_other = Paragoz.new_currency(amount: 750.0) # 750 TRY object
+# To see all rates in formatted view
+# customized to_s
+puts usd
+puts euro
+puts tr
 
-# Instances:
-# for Currencies_All object
-    json_data # Returns a hash: {update_date: int, name: string, selling: float, buying: float, change_rate: float}
-# for your currency object
-  usd = Paragoz.new_currency
-  usd.currency_code # Symbol
-  usd.currency_update_date # Integer
-  usd.currency_name # String
-  usd.currency_selling # Float: Selling value
-  usd.currency_buying # Float: Buying value
-  usd.currency_change_rate # Float: Change rate
-# Methods:
-# for Paragoz module
-  currency = Paragoz.new_ currency # Named Parameters: 'code: "usd"' 'amount: 1' 'data: nil'
-# if you dont pass any hash to data then Currencies_All.json_data is default.
-# RAW JSON DATA
-    Paragoz.RESPONSE.body
+# To see cost of buying a foreign curreny
+# currency_object.print_costs
+usd.print_costs
+euro.print_costs
+tr.print_costs
+
+# You can calculate cost of buying a spesific amount of a specific foreign currency
+# 3 parameters: currency_code & calculate_amount (default: 1.0)
+# 3rd true for extra info
+tr.calculate_amount('usd', 120.0)
+
+# To return a spesific change rate as a number give currency code as a parameter
+# To see all currency codes: Paragoz::CURRENCY_CODES will return and array
+tr.take_rate('aud')
+euro.take_rate('jpy')
+usd.take_rate('sek')
+
+# To exchange a currency object to another currency object
+# you can give second parameter as true to see more info
+sell = tr_other.currency_to_currency(usd)
+buy = usd_other.currency_to_currency(euro_other)
+test = buy = usd_other.currency_to_currency(euro, true)
 
 ```
+
 
 ## Development
 
@@ -65,8 +78,11 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/cptangry/paragoz.
+Bug reports and pull requests are welcome on GitHub at https://github.com/cptanry/paragoz.
+Your questions are welcome at: caglar.gokhan@gmail.com
+
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+
