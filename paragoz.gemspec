@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["caglar.gokhan@gmail.com"]
 
   spec.summary       = %q{Currency parser}
-  spec.description   = %q{Parsing currency data from Doviz.com and calculate exchange etc.}
+  spec.description   = %q{Parsing currency data from fixer.io currency api JSON and calculate exchange rate, cost etc.}
   spec.homepage      = "https://github.com/cptangry/paragoz"
   spec.license       = "MIT"
 
