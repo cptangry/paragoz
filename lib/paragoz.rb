@@ -1,92 +1,102 @@
+require_relative "paragoz/version"
 require 'json'
 require 'net/http'
 require 'uri'
-require 'pp'
 
 module Paragoz
-
-  CURRENCY_CODES = %i{USD EUR GBP CHF CAD RUB AED AUD DKK SEK NOK JPY KWD ZAR
-    BHD LYD SAR IQD ILS IRR INR MXN HUF NZD BRL IDR CSK PLN BGN RON CNY ARS ALL
-    AZN BAM BYR CLP COP CRC DZD EGP HKD HRK ISK JOD KRW KZT LBP LKR LTL LVL MAD
-    MDL MKD MYR OMR PEN PHP PKR QAR RSD SGD SYP THB TWD UAH UYU}
-
-  URL = URI.parse('http://www.doviz.com/api/v1/currencies/all/latest')
-  HTTP = Net::HTTP.new(URL.host, URL.port)
-  REQUEST = Net::HTTP::Get.new(URL.request_uri)
-  RESPONSE = HTTP.request(REQUEST)
-
-  class Currencies
-    attr_reader :json_data
-    def initialize(*args)
-      @json_data = {}
-      args.each do |currency|
-        @json_data["#{currency["code"]}".to_sym] = {
-          update_date: currency["update_date"],
-          name:        currency["full_name"],
-          selling:     currency["selling"],
-          buying:      currency["buying"],
-          change_rate: currency["change_rate"]}
+  
+  CURRENCY_CODES = ["AUD", "BGN", "BRL", "CAD", "CHF", "CNY", "CZK", "DKK", "GBP",
+    "HKD", "HRK", "HUF", "IDR", "ILS", "INR", "JPY", "KRW", "MXN", "MYR", "NOK", "NZD",
+    "PHP", "PLN", "RON", "RUB", "SEK", "SGD", "THB", "USD", "ZAR", "EUR", "TRY"]
+    
+   private class Currency
+    attr_reader :currencies_defined, :base, :date, :rates, :costs, :amount
+    
+    @@currencies_defined = 0
+    
+    def initialize(code, amount, data = nil)
+      data    = data || parse_data(take_response(code.upcase))
+      @base   = data["base"]
+      @date   = data["date"]
+      @rates  = data["rates"]
+      @costs  = cost_of_other_currencies
+      @amount = amount
+      
+      @@currencies_defined += 1
+    end
+     
+    private def parse_data(response)
+      JSON.parse(response.body) if response.code == '200'
+    end
+  
+    private def take_response(base)
+      url = URI.parse("http://api.fixer.io/latest?base=#{base}")
+      http = Net::HTTP.new(url.host, url.port)
+      request = Net::HTTP::Get.new(url.request_uri)
+      response = http.request(request)
+    end
+    
+    private def cost_of_other_currencies
+      costs = {}
+      @rates.each_pair do |k, v|
+        costs[k] = 1 / v
+      end
+      costs
+    end
+     
+     def calculate_cost(currency_code ,calculate_amount = 1.0, info = false)
+       cost = @cost[currency_code] * amount
+       if amount.is_a?(Float) && amount > 0  && CURRENCY_CODES.include?(currency_code.upcase)
+         puts "You need #{cost} #{@base} to buy #{amount} #{currency_code}"
+         @cost[currency_code] * amount
+       else
+         puts "ERROR! You need to give 2 parameters >>  currency_code & calculate_amount"
+         puts "Use 'Paragoz::CURRENCY_CODES' for see all defined currency codes."
+         puts "Amount has to be an float and greater than 0."
+       end
+     end
+     
+     def currency_to_currency(other_currency_object, info = false)
+       exchange = @amount * @rates[other_currency_object.base]
+       printf("%.2f %s equals to %.4f %s \n", @amount, @base, exchange, other_currency_object.base) if info
+       exchange
+     end
+    
+    
+    def exchance_to(currency_code, exchance_amount = nil, info = false)
+      amount = exchance_amount || self.amount
+      exchange = @rates[currency_code.upcase] * amount
+      printf("%.2f %s equals to %.4f", amount, @base, exchange) if info
+      exchange
+    end
+    
+    def take_rate(currency_code)
+      @rates[currency_code.upcase]
+    end
+     
+    def print_costs
+      puts "at #{@date}"
+      @costs.each_pair do |k, v|
+        printf("1.00 %s costs %.4f %s to buy! \n", k, v, @base)
+      end
+    end
+    
+    def to_s
+      puts "for #{@base} at #{@date}"
+      @rates.each_pair do |k, v|
+        printf("%.2f %s equals to %.4f %s \n", @amount, @base, v, k)
       end
     end
   end
-
-    class Currency
-      attr_reader :currency_code,    :currency_update_date, :currency_name,
-                  :currency_selling, :currency_buying, :currency_change_rate,
-                  :amount
-      def initialize(code, amount = 1, currencies)
-        @currency_code        = code.upcase.to_sym
-        @currency_update_date = currencies[code.upcase.to_sym][:update_date]
-        @currency_name        = currencies[code.upcase.to_sym][:name]
-        @currency_selling     = currencies[code.upcase.to_sym][:selling]
-        @currency_buying      = currencies[code.upcase.to_sym][:buying]
-        @currency_change_rate = currencies[code.upcase.to_sym][:change_rate]
-        @amount = amount
-      end
-
-      def buying_value
-        @currency_buying * @amount
-      end
-
-      def selling_value
-        @currency_selling * @amount
-      end
-
-      def amount=(value)
-        if value.is_a?(Integer) && value > 0
-          @amount = value
-        else
-          puts "Lütfen atamak için 0'dan büyük bir tamsayı tanımlayın!"
-        end
-      end
-
-      def exchance_with(currency, other_amount = nil)
-         (self.currency_buying * (other_amount || self.amount)) / currency.currency_buying
-      end
-    end
-
-  def self.new_currency(code: "usd", amount: 1, data: nil)
-    new_money = nil
-    currencies = data || Currencies_All.json_data
-    if CURRENCY_CODES.include?(code.upcase.to_sym)
-      new_money = Currency.new(code, amount, currencies)
-      new_money
+  
+  def self.new_currency(code: "try", amount: 1.0, data: nil)
+    if code.is_a?(String) && CURRENCY_CODES.include?(code.upcase) && amount.is_a?(Float) && amount > 0
+      Currency.new(code, amount, data)
     else
-      puts      "Hatalı bir para birimi tanımladınız!"
-      print "Para birimi kod listesi: #{CURRENCY_CODES}"
+      puts "ERROR!"
+      puts "to define a currency you have to give two named parameters:"
+      puts "code: 'currency code as a string' & amount: 'and float greater than 0'"
+      puts "Use 'Paragoz::CURRENCY_CODES' for see all defined currency codes."
     end
   end
-
-  Response_JSON = JSON.parse(RESPONSE.body) if RESPONSE.code == "200"
-  Currencies_All = Currencies.new(*Response_JSON)
 end
-
-# usd = Paragoz.new_currency(amount: 4)
-# euro = Paragoz.new_currency(code: "eur", amount: 5)
-#
-# puts "1 Dolar  #{usd.exchance_with(euro, 1)} Euro eder!"
-# puts "2 Dolar  #{usd.exchance_with(euro, 2)} Euro eder!"
-# puts "3 Dolar  #{usd.exchance_with(euro, 3)} Euro eder!"
-#
-# puts "4 Dolar  #{usd.exchance_with(euro)} Euro eder!" # Creation amount was 4
-
