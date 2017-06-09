@@ -45,4 +45,40 @@ describe Paragoz do
       end
     end
   end
+
+  describe 'Döviz try nesnesi oluştuğunda' do
+    it 'şu niteliklere sahiptir' do
+      @doviz_try.data.wont_be_nil
+      @doviz_try.base.must_be_kind_of String
+      @doviz_try.base.length.must_equal 3
+      @doviz_try.date.must_match /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
+      @doviz_try.rates.wont_be_empty
+      @doviz_try.rates.must_be_kind_of Hash
+      @doviz_try.costs.wont_be_empty
+      @doviz_try.costs.must_be_kind_of Hash
+      @doviz_try.amount.must_be :>, 0
+    end
+
+    it 'take_rate davranışı her para kodu için float döner' do
+      @doviz_try.rates.each_key do |k|
+        @doviz_try.take_rate(k).must_be_kind_of Numeric
+      end
+    end
+
+    it 'calculate_cost davranışı her dövizden o para sınıfı ile bir birim alma maliyetini döner' do
+      Paragoz::CURRENCY_CODES.each do |i|
+        @doviz_try.calculate_cost(i).must_be_kind_of Numeric unless i == @doviz_try.base
+      end
+    end
+
+    it 'currency_to_currency bir döviz diğer döviz nesnesi cinsinden değerini hesaplar' do
+      @doviz_try.currency_to_currency(@doviz_usd).must_be_kind_of Numeric
+    end
+
+    it 'exchange_to "parametre/nesnenin amount niteliği" kadar kodu belirtilen döviz olarak karşılığını döner' do
+      Paragoz::CURRENCY_CODES.each do |i|
+        @doviz_try.exchance_to(i, rand(1..100)).must_be_kind_of Numeric unless i == @doviz_try.base
+      end
+    end
+  end
 end
