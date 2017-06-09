@@ -10,15 +10,15 @@ module Paragoz
     "PHP", "PLN", "RON", "RUB", "SEK", "SGD", "THB", "USD", "ZAR", "EUR", "TRY"]
     
    private class Currency
-    attr_reader :currencies_defined, :base, :date, :rates, :costs, :amount
+    attr_reader :currencies_defined, :base, :date, :rates, :costs, :amount, :data
     
     @@currencies_defined = 0
     
     def initialize(code, amount, data = nil)
-      data    = data || parse_data(take_response(code.upcase))
-      @base   = data["base"]
-      @date   = data["date"]
-      @rates  = data["rates"]
+      @data   = data || parse_data(take_response(code.upcase))
+      @base   = @data["base"]
+      @date   = @data["date"]
+      @rates  = @data["rates"]
       @costs  = cost_of_other_currencies
       @amount = amount
       
@@ -43,12 +43,12 @@ module Paragoz
       end
       costs
     end
-     
+
      def calculate_cost(currency_code ,calculate_amount = 1.0, info = false)
-       cost = @cost[currency_code] * amount
+       cost = self.costs[currency_code] * calculate_amount || self.amount
        if amount.is_a?(Float) && amount > 0  && CURRENCY_CODES.include?(currency_code.upcase)
          puts "You need #{cost} #{@base} to buy #{amount} #{currency_code}" if info
-         @cost[currency_code] * amount
+         cost
        else
          puts "ERROR! You need to give 2 parameters >>  currency_code & calculate_amount"
          puts "Use 'Paragoz::CURRENCY_CODES' for see all defined currency codes."
@@ -88,7 +88,7 @@ module Paragoz
       end
     end
   end
-  
+
   def self.new_currency(code: "try", amount: 1.0, data: nil)
     if code.is_a?(String) && CURRENCY_CODES.include?(code.upcase) && amount.is_a?(Float) && amount > 0
       Currency.new(code, amount, data)
