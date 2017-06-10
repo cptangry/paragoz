@@ -26,6 +26,14 @@ module Paragoz
       @@currencies_defined += 1
     end
 
+    def amount(value)
+      if value.is_a?(Numeric) && value > 0
+        @amount = value
+      else
+        puts "ERROR! Amount must be a Number and greater than 0."
+      end
+    end
+
     def parse_data(response)
       JSON.parse(response.body) if response.code == '200'
     end
@@ -53,7 +61,7 @@ module Paragoz
     end
 
     def calculate_cost(currency_code ,calculate_amount = 1.0, info = false)
-      cost = self.costs[currency_code] * calculate_amount || self.amount
+      cost = self.costs[currency_code.upcase] * calculate_amount || self.amount
       if amount.is_a?(Float) && amount > 0  && CURRENCY_CODES.include?(currency_code.upcase)
         puts "You need #{cost} #{@base} to buy #{amount} #{currency_code}" if info
         cost
