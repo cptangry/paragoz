@@ -2,7 +2,7 @@
 
 Welcome to Paragoz gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/paragoz`. To experiment with that code, run `bin/console` for an interactive prompt.
 
-It will parse currency data from fixer.io currency api JSON and calculate exchange rate, cost etc. for you.
+It will parse currency JSON data from fixer.io currency api and calculate exchange rate, cost etc. for you.
 
 ## Installation
 
@@ -25,12 +25,30 @@ Or install it yourself as:
 ```ruby
 # To define a usd variable refers to 1 USD object
 # Paragoz.new_currency(code: 'usd')
-# there is 3 named parameters:
+# there is 4 named parameters:
 # code: String(default 'try') amount: Float(default: 1.0) data: JSON(default: nil)
+# and date: String(default: nil) if you don't give date parameters it will return
+# latest rate values in actual day.
+# Date format: 'YYYY-MM-DD'
 # you can use customized json formatted as on http://api.fixer.io/latest?base=USD
 # (Also you can pick any currency code after '=' sign when visiting link.) 
+# Currency Object Instances
+# data raw data hash
+# date time object
+# rates
+# costs
 usd = Paragoz.new_currency(code: 'usd', amount: 15.0)
-usd_other = Paragoz.new_currency(code: 'usd', amount: 5.0) # 5 USD object
+usd_other = Paragoz.new_currency(code: 'usd', amount: 5.0, date: '2011-06-06') # 5 USD object
+
+# You can compare 2 same type currency object with different date:
+# 1999's oldest values you can access
+# Comparation object instances:
+# comparation_rates
+# comparation costs
+comparation = Paragoz.compare_currencies(usd, usd_other)
+tr1 = Paragoz.new_currency
+tr2 = Paragoz.new_currency(date: '2016-06-09')
+comparation = Paragoz.compare_currencies(tr1, tr2)
 
 # To define a euro variables refers to 50 EURO object
 euro = Paragoz.new_currency(code: 'eur', amount: 50.0)

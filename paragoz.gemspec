@@ -11,7 +11,9 @@ Gem::Specification.new do |spec|
   spec.email         = ["caglar.gokhan@gmail.com"]
 
   spec.summary       = %q{Currency parser}
-  spec.description   = %q{Parsing currency data from fixer.io currency api JSON and calculate exchange rate, cost etc.}
+  spec.description   = %Q{Paragoz parses currency JSON data from fixer.io currency api and you can create a currency object that
+                          includes world currencies rate and cost of buying a currency. Also you can compare two currencies
+                          as you can print all rates and costs and comparation differences.}
   spec.homepage      = "https://github.com/cptangry/paragoz"
   spec.license       = "MIT"
 
