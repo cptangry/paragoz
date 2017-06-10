@@ -18,7 +18,7 @@ module Paragoz
       @data   = data || parse_data(take_response(code.upcase, date))
       @time_array = @data["date"].split('-').map {|i| i = i.to_i}
       @base   = @data["base"]
-      @date   = Time.new(*@time_array)
+      @date   = @time_array && @time_array.is_a?(Array) ? Time.new(*@time_array) : Time.now
       @rates  = @data["rates"]
       @costs  = cost_of_other_currencies
       @amount = amount
@@ -26,7 +26,7 @@ module Paragoz
       @@currencies_defined += 1
     end
 
-    def amount(value)
+    def amount=(value)
       if value.is_a?(Numeric) && value > 0
         @amount = value
       else
