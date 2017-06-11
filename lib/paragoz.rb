@@ -118,10 +118,10 @@ module Paragoz
   attr_reader :time_difference, :comparation_rates, :comparation_costs
 
   def initialize(currency_object, currency_object_to_compare)
-  @time_difference = currency_object.date > currency_object_to_compare.date ? "Currency Object's Rates Are Newer" :
-                     "Currency Object's Rates Are Older"
-  @comparation_rates       = compare_rates(currency_object.rates, currency_object_to_compare.rates)
-  @comparation_costs       = compare_costs(currency_object.costs, currency_object_to_compare.costs)
+    @time_difference = currency_object.date > currency_object_to_compare.date ? "Currency Object's Rates Are Newer" :
+                       "Currency Object's Rates Are Older"
+    @comparation_rates       = compare_rates(currency_object.rates, currency_object_to_compare.rates)
+    @comparation_costs       = compare_costs(currency_object.costs, currency_object_to_compare.costs)
   end
 
   private def compare_rates(rates, rates_to_cmpr)
