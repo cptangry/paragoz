@@ -80,6 +80,11 @@ tr.take_rate('aud')
 euro.take_rate('jpy')
 usd.take_rate('sek')
 
+#For exchanging your currency:
+currency = Paragoz.new_currency(code: 'usd', amount: 0.50)
+currency.exchange_to('eur') # seme result with take_rate
+currency.exchange_to('eur', 5) # Returns 5 USD's currency value
+
 # To exchange a currency object to another currency object
 # you can give second parameter as true to see more info
 sell = tr_other.currency_to_currency(usd)

@@ -83,9 +83,8 @@ module Paragoz
     end
 
 
-    def exchance_to(currency_code, exchance_amount = nil, info = false)
-      amount = exchance_amount || self.amount
-      exchange = @rates[currency_code.upcase] * amount
+    def exchange_to(currency_code, exchance_amount = nil, info = false)
+      exchange = @rates[currency_code.upcase] * (exchance_amount || self.amount)
       printf("%.2f %s equals to %.4f", amount, @base, exchange) if info
       exchange
     end
