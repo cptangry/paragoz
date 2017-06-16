@@ -89,7 +89,7 @@ currency.exchange_to('eur', 5) # Returns 5 USD's currency value
 # you can give second parameter as true to see more info
 sell = tr_other.currency_to_currency(usd)
 buy = usd_other.currency_to_currency(euro_other)
-test = buy = usd_other.currency_to_currency(euro, true)
+test = usd_other.currency_to_currency(euro, true)
 
 ```
 
