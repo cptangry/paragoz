@@ -1,8 +1,6 @@
 require 'minitest/autorun'
 require_relative "test_helper"
 
-require_relative '../lib/paragoz.rb'
-
 describe Paragoz do
   before do
     Paragoz::VERSION.wont_be_nil
@@ -10,6 +8,7 @@ describe Paragoz do
     @doviz_baska_biri = Paragoz.new_currency(code: Paragoz::CURRENCY_CODES.sample)
     @doviz_digeri     = Paragoz.new_currency(code: 'try', date: '2017-01-04')
     @doviz_bir_digeri = Paragoz.new_currency
+    @karsilastirma = Paragoz.compare_currencies(@doviz_digeri, @doviz_bir_digeri)
   end
   
   describe 'Döviz biri nesnesi oluştuğunda' do
@@ -43,8 +42,15 @@ describe Paragoz do
 
     it 'exchange_to "parametre/nesnenin amount niteliği" kadar kodu belirtilen döviz olarak karşılığını döner' do
       Paragoz::CURRENCY_CODES.each do |i|
-        @doviz_biri.exchance_to(i, rand(1..100)).must_be_kind_of Numeric unless i == @doviz_biri.base
+        @doviz_biri.exchange_to(i, rand(1..100)).must_be_kind_of Numeric unless i == @doviz_biri.base
       end
+    end
+  end
+  describe 'karşılaştırma nesnesi' do
+    it 'şu niteliklere sahiptir' do
+      @karsilastirma.time_difference.must_be_kind_of String
+      @karsilastirma.comparation_rates.must_be_kind_of Hash
+      @karsilastirma.comparation_costs.must_be_kind_of Hash
     end
   end
 end

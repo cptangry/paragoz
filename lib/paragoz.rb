@@ -16,7 +16,7 @@ module Paragoz
 
     def initialize(code, amount, data, date)
       @data   = data || parse_data(take_response(code.upcase, date))
-      @time_array = @data["date"].split('-').map {|i| i = i.to_i}
+      @time_array = @data["date"].split('-').map(&:to_i)
       @base   = @data["base"]
       @date   = @time_array && @time_array.is_a?(Array) ? Time.new(*@time_array) : Time.now
       @rates  = @data["rates"]
@@ -27,8 +27,8 @@ module Paragoz
     end
 
     def amount=(value)
-      if value.is_a?(Numeric) && value > 0
-        @amount = value
+      if value.is_a?(Numeric) && value.to_i > 0
+        @amount = value.to_i
       else
         puts "ERROR! Amount must be a Number and greater than 0."
       end
@@ -60,15 +60,14 @@ module Paragoz
       costs
     end
 
-    def calculate_cost(currency_code ,calculate_amount = 1.0, info = false)
-      cost = self.costs[currency_code.upcase] * calculate_amount || self.amount
-      if amount.is_a?(Float) && amount > 0  && CURRENCY_CODES.include?(currency_code.upcase)
+    def calculate_cost(currency_code ,calculation_amount = 1.0, info = false)
+      cost = 0.0
+      if amount.is_a?(Numeric) && amount > 0  && CURRENCY_CODES.include?(currency_code.upcase)
+        cost = self.costs[currency_code.upcase] * calculation_amount || self.amount
         puts "You need #{cost} #{@base} to buy #{amount} #{currency_code}" if info
         cost
       else
         puts "ERROR! You need to give 2 parameters >>  currency_code & calculate_amount"
-        puts "Use 'Paragoz::CURRENCY_CODES' for see all defined currency codes."
-        puts "Amount has to be an float and greater than 0."
       end
     end
 
@@ -181,11 +180,11 @@ module Paragoz
       Currency.new(code, amount, data, date)
     else
       puts "ERROR!"
-      puts "to define a currency you have to give at least two named parameters:"
-      puts "code: 'currency code as a string' & amount: 'and float greater than 0'"
-      puts "Use 'Paragoz::CURRENCY_CODES' for see all defined currency codes."
-      puts "date: parameter format 'YYYY-MM-DD'"
-      puts "You can use customized data formated as fixer.io JSON"
+      puts "to define a currency you have to give at least two named parameters:
+      code: 'currency code as a string' & amount: 'and float greater than 0'
+      Use 'Paragoz::CURRENCY_CODES' for see all defined currency codes.
+      date: parameter format 'YYYY-MM-DD'
+      You can use customized data formated as fixer.io JSON"
     end
   end
 end
