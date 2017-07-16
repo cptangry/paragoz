@@ -16,21 +16,21 @@ module Paragoz
 
     def initialize(code, amount, data, date)
       @data   = data || parse_data(take_response(code.upcase, date))
-      @time_array = @data["date"].split('-').map(&:to_i)
-      @base   = @data["base"]
-      @date   = @time_array && @time_array.is_a?(Array) ? Time.new(*@time_array) : Time.now
-      @rates  = @data["rates"]
-      @costs  = cost_of_other_currencies
-      @amount = amount
+      @time_arr = @data["date"].split('-').map(&:to_i)
+      @base     = @data["base"]
+      @date     = @time_arr.is_a?(Array) ? Time.new(*@time_array) : Time.now
+      @rates    = @data["rates"]
+      @costs    = cost_of_other_currencies
+      @amount   = amount
 
       @@currencies_defined += 1
     end
 
     def amount=(value)
-      if value.is_a?(Numeric) && value.to_i > 0
-        @amount = value.to_i
+      if value.to_f > 0.0
+        @amount = value.to_f
       else
-        puts "ERROR! Amount must be a Number and greater than 0."
+        puts "ERROR! Amount must be a Number and greater than 0.0"
       end
     end
 
@@ -62,19 +62,21 @@ module Paragoz
 
     def calculate_cost(currency_code ,calculation_amount = 1.0, info = false)
       cost = 0.0
-      if amount.is_a?(Numeric) && amount > 0  && CURRENCY_CODES.include?(currency_code.upcase)
+      if amount.to_f > 0.0  && CURRENCY_CODES.include?(currency_code.upcase)
         cost = self.costs[currency_code.upcase] * calculation_amount || self.amount
         puts "You need #{cost} #{@base} to buy #{amount} #{currency_code}" if info
         cost
       else
-        puts "ERROR! You need to give 2 parameters >>  currency_code & calculate_amount"
+        puts "ERROR! PARAMETERS ARE currency_code(string) & calculate_amount(float)"
+        puts "3rd parameter is boolean for extra info"
       end
     end
 
-    def currency_to_currency(other_currency_object, info = false)
-      if self.base != other_currency_object.base
-        exchange = self.amount * self.rates[other_currency_object.base]
-        printf("%.2f %s equals to %.4f %s \n", @amount, @base, exchange, other_currency_object.base) if info
+    def currency_to_currency(other_currency, info = false)
+      if self.base != other_currency.base
+        exchange = self.amount * self.rates[other_currency.base]
+        printf("%.2f %s equals to %.4f %s \n",
+               @amount, @base, exchange, other_currency.base) if info
         exchange
       else
         puts "Error! Trying to conver same currency object."
@@ -84,7 +86,8 @@ module Paragoz
 
     def exchange_to(currency_code, exchance_amount = nil, info = false)
       exchange = @rates[currency_code.upcase] * (exchance_amount || self.amount)
-      printf("%.2f %s equals to %.4f", amount, @base, exchange) if info
+      printf("%.2f %s equals to %.4f",
+             amount, @base, exchange) if info
       exchange
     end
 
